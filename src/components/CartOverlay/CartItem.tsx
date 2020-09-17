@@ -4,19 +4,20 @@ import { useDispatch } from "react-redux";
 export default function CartItem({ item }) {
   const dispatch = useDispatch();
 
-  function removeItem(id: any) {
-    dispatch({ type: "REMOVE_ITEM_CLICKED", payload: id });
+  function removeItem(id: any, amount: any) {
+    dispatch({ type: "REMOVE_ITEM_CLICKED", payload: {id,amount} });
+    console.log(amount);
+    
   }
-
   function increaseAmount(id: number) {
     dispatch({ type: "INCREASE_AMOUNT_CLICKED", payload: id });
   }
 
   function decreaseAmount(id, amount) {
     if (amount === 1) {
-      dispatch({ type: "REMOVE_ITEM_CLICKED", payload: id });
+      dispatch({ type: "REMOVE_ITEM_CLICKED", payload: {id, amount} });
     } else {
-      dispatch({ type: "DECREASE_AMOUNT_CLICKED", payload: id });
+      dispatch({ type: "DECREASE_AMOUNT_CLICKED", payload: {id, amount} });
     }
   }
 
@@ -29,7 +30,7 @@ export default function CartItem({ item }) {
         <button
           type="button"
           className="cart-btn remove-btn"
-          onClick={() => removeItem(item.id)}
+          onClick={() => removeItem(item.id, item.amount)}
         >
           remove
         </button>

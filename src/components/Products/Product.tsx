@@ -1,7 +1,6 @@
 import React from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Link } from "react-router-dom";
-import CartItem from "../CartOverlay/CartItem";
 
 export default function Product({ product }) {
   const dispatch = useDispatch();

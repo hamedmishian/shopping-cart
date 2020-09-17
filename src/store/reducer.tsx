@@ -1,21 +1,11 @@
-import Data from "../data";
-
 class Product {
   id: any;
-  title: string;
-  price: number;
-  image: string;
-  description: string;
-  amount: number;
-  products: any;
-  constructor(
-    id: any,
-    title: string,
-    price: number,
-    image: string,
-    description: string,
-    amount: number
-  ) {
+  title: any;
+  price: any;
+  image: any;
+  description: any;
+  amount: any;
+  constructor({ id, title, price, image, description, amount }) {
     this.id = id;
     this.title = title;
     this.price = price;
@@ -25,34 +15,65 @@ class Product {
   }
 }
 
-export const ProductList = Data.items.map((item) => {
-  return new Product(
-    item.sys.id,
-    item.fields.title,
-    item.fields.price,
-    item.fields.image.fields.file.url,
-    item.fields.description,
-    item.fields.amount
-  );
-});
-
 const initialState: any = {
-  products: ProductList,
+  products: [],
   cart: [],
   toggle: false,
   productCounter: 0,
+  loading: false,
+  selectedProductDetail: [],
 };
 
-
 export default function reducer(state = initialState, action: any) {
-  
   switch (action.type) {
+    case "LOADING":
+      return {
+        ...state,
+        loading: true,
+      };
+
+    case "DATA_LOADED":
+      // console.log(ProductList);
+      const ProductList = action.payload.map((item) => {
+        return new Product({
+          id: item.sys.id,
+          title: item.fields.title,
+          price: item.fields.price,
+          image: item.fields.image.fields.file.url,
+          description: item.fields.description,
+          amount: item.fields.amount,
+        });
+      });
+      return {
+        ...state,
+        products: ProductList,
+        loading: false,
+      };
+
+    case "PRODUCT_DETAIL_LOADED":
+      const newProductDetail: any = new Product({
+        id: action.payload.sys.id,
+        title: action.payload.fields.title,
+        price: action.payload.fields.price,
+        image: action.payload.fields.image.fields.file.url,
+        description: action.payload.fields.description,
+        amount: action.payload.fields.amount,
+      });
+      console.log(action.payload);
+      const detail = [];
+      detail.push(newProductDetail);
+
+      return {
+        ...state,
+        loading: false,
+        selectedProductDetail: detail,
+      };
+
     case "CLEAR_BUTTON_CLICKED":
       return {
         ...state,
         cart: [],
         productCounter: 0,
-        total: 0,
       };
 
     case "ADD_TO_CART_CLICKED":
@@ -61,13 +82,13 @@ export default function reducer(state = initialState, action: any) {
         ...state,
         cart: [...state.cart, newItem],
         toggle: true,
-        productCounter: state.productCounter + 1
+        productCounter: state.productCounter + 1,
       };
 
     case "REMOVE_ITEM_CLICKED":
       return {
         ...state,
-        cart: state.cart.filter((item) => item.id !== action.payload),
+        cart: state.cart.filter((item) => item.id !== action.payload.id),
         productCounter: state.productCounter - 1,
       };
 
@@ -91,19 +112,17 @@ export default function reducer(state = initialState, action: any) {
             ? { ...item, amount: item.amount + 1 }
             : { ...item };
         }),
-        productCounter: state.productCounter + 1
+        // productCounter: state.productCounter + 1
       };
 
     case "DECREASE_AMOUNT_CLICKED":
       return {
         ...state,
         cart: [...state.cart].map((item) => {
-          return item.id === action.payload
+          return item.id === action.payload.id
             ? { ...item, amount: item.amount - 1 }
             : { ...item };
         }),
-        productCounter: state.productCounter - 1,
-        // total : newTotalDec,
       };
 
     default:

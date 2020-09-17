@@ -1,6 +1,5 @@
 import React from "react";
 import {Link} from "react-router-dom";
-import {useState} from 'react';
 import CartOverlay from "../CartOverlay/CartOverlay";
 import { useDispatch, useSelector } from "react-redux";
 
@@ -20,6 +19,7 @@ export default function Navbar() {
   return (
     <>
     <CartOverlay toggle={toggle} handleClose={handleClose}/>
+
     <nav className="navbar">
       <div className="navbar-center">
         <span className="nav-icon">
